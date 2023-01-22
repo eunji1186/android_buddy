@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/bucketlist"
+            android:title="버킷리스트" />
+        <item
+            android:id="@+id/yeargoal"
+            android:title="올해의 목표" />
+        <item
+            android:id="@+id/my"
+            android:title="내 정보" />
+    </group>
+</menu>
