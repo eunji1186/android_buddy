@@ -11,10 +11,11 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Login extends AppCompatActivity {
-    private Button login, join;
-    private TextView login_id, login_pwd;
-    private TextView year;
+public class Login extends AppCompatActivity implements View.OnClickListener {
+
+    TextView login_id, login_pwd;
+    Button login, join;
+    TextView year;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,26 +31,8 @@ public class Login extends AppCompatActivity {
         year = findViewById(R.id.year);
         year.setText(getTime());
 
-        login.setOnClickListener(new Button.OnClickListener() {
-
-            //setLogin();
-
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        });
-
-        join.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), Join.class);
-                startActivity(intent);
-                finish();
-            }
-        });
+        join.setOnClickListener(this);
+        login.setOnClickListener(this);
     }
 
     private String getTime() {
@@ -61,9 +44,16 @@ public class Login extends AppCompatActivity {
         return getTime;
     }
 
-    private void setLogin(){
-        
+    @Override
+    public void onClick(View view) {
+        if(view.getId() == R.id.join){
+            Intent intent = new Intent(getApplicationContext(), Join.class);
+            startActivity(intent);
+        }
+
+        else if(view.getId() == R.id.login){
+            Intent intent = new Intent(getApplicationContext(), Login.class);
+            startActivity(intent);
+        }
     }
-
-
 }
