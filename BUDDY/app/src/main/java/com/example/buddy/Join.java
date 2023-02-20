@@ -55,7 +55,7 @@ public class Join extends AppCompatActivity {
         String email =  email_input.getText().toString();
 
         InsertData task = new InsertData();
-        task.execute("http://" + /*localhost +*/ "/insert.php", id, pwd, name, email);
+        task.execute("http://127.0.0.0:142/insert.php", id, pwd, name, email);
 
         id_input.setText("");
         pwd_input.setText("");

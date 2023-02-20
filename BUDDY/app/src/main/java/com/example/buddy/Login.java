@@ -1,18 +1,25 @@
 package com.example.buddy;
 
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONObject;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Login extends AppCompatActivity implements View.OnClickListener {
-
+public class Login extends AppCompatActivity implements View.OnClickListener{
+    private AlertDialog dialog;
     TextView login_id, login_pwd;
     Button login, join;
     TextView year;
@@ -22,17 +29,79 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        login_id = (TextView) findViewById(R.id.login_id);
-        login_pwd = (TextView) findViewById(R.id.login_pwd);
+        login_id = findViewById(R.id.login_id);
+        login_pwd = findViewById(R.id.login_pwd);
 
-        login = (Button)findViewById(R.id.login);
-        join = (Button)findViewById(R.id.join);
+        login = findViewById(R.id.login);
+        join = findViewById(R.id.join);
 
         year = findViewById(R.id.year);
         year.setText(getTime());
 
         join.setOnClickListener(this);
         login.setOnClickListener(this);
+    }
+
+    public void onClick(View view){
+        if(view.getId() == R.id.join){
+            Intent intent_join = new Intent(this, Join.class);
+            startActivity(intent_join);
+        }
+
+        else if(view.getId() == R.id.login){
+            check_login();
+            Intent intent_login = new Intent(this, MainActivity.class);
+            startActivity(intent_login);
+
+        }
+    }
+
+    private void check_login(){
+        String id = login_id.getText().toString();
+        String pwd = login_pwd.getText().toString();
+
+        Response.Listener<String> responseListener = new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                try{
+                    JSONObject jsonResponse = new JSONObject(response);
+                    boolean success = jsonResponse.getBoolean("success");
+
+                    if(success){
+                        AlertDialog.Builder builder = new AlertDialog.Builder(Login.this);
+
+                        dialog = builder.setMessage("로그인에 성공했습니다.")
+                                        .setPositiveButton("확인", null)
+                                        .create();
+
+                        dialog.show();
+
+                        Intent intent = new Intent(Login.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+
+                    else{
+                        AlertDialog.Builder builder = new AlertDialog.Builder(Login.this);
+                        dialog = builder.setMessage("계정을 다시 확인하세요")
+                                        .setNegativeButton("다시시도", null)
+                                        .create();
+                        dialog.show();
+
+                        Intent intent = new Intent(Login.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                } catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        LoginRequest loginRequest = new LoginRequest(id, pwd, responseListener);
+        RequestQueue queue = Volley.newRequestQueue(Login.this);
+        queue.add(loginRequest);
     }
 
     private String getTime() {
@@ -43,17 +112,14 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
 
         return getTime;
     }
-
+    
     @Override
-    public void onClick(View view) {
-        if(view.getId() == R.id.join){
-            Intent intent = new Intent(getApplicationContext(), Join.class);
-            startActivity(intent);
-        }
+    protected void onStop(){
+        super.onStop();
 
-        else if(view.getId() == R.id.login){
-            Intent intent = new Intent(getApplicationContext(), Login.class);
-            startActivity(intent);
+        if(dialog != null){
+            dialog.dismiss();
+            dialog = null;
         }
     }
 }
